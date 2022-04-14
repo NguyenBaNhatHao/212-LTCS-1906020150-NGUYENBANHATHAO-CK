@@ -213,6 +213,7 @@ namespace Tetrisgame
         private async void getHighScore()
         {
             List<ScoreModel> scoreModels = null;
+            
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://localhost:7009/api/");
             client.DefaultRequestHeaders.Accept.Clear();
@@ -226,7 +227,8 @@ namespace Tetrisgame
                 var res = "";
                 foreach(ScoreModel score in scoreModels)
                 {
-                    res += score.NickName + ": \t" + score.Score + "pts" + Environment.NewLine;
+                    string day = score.Time.Year.ToString()+"/"+ score.Time.Month.ToString() + "/" + score.Time.Day.ToString();
+                    res += score.NickName + ": \t" + score.Score + "pts"+" \t"+day+ Environment.NewLine;
                 }
                 txtHighScore.Text = res;
             }catch(Exception e)
@@ -242,12 +244,14 @@ namespace Tetrisgame
             string user = txtName.Text;
             ScoreModel score1 = new ScoreModel();
             score1.NickName = user;
+            DateTime localDate = DateTime.Now;
             int score = gameState.Score;
+            score1.Time = localDate;
             if(score > 0)
             {
                 client.BaseAddress = new Uri("https://localhost:7009/api/");
 
-                var payload = "{\"Nickname\": \"" + score1.NickName + "\",\"score\": "+score+"}";
+               var payload = "{\"Nickname\": \"" + score1.NickName + "\",\"score\": "+score+ ",\"Time\": \"" + score1.Time.ToString("yyyy-MM-ddTHH:mm:ss") + "\"}";
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 try
